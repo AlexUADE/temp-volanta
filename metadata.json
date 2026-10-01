@@ -1,0 +1,8 @@
+{
+  "name": "Remix Volanta eze",
+  "description": "Plataforma de alquiler de vehículos entre particulares en Argentina con gestión integral de flota, publicaciones, reservas y pagos garantizados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
