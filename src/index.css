@@ -1,34 +1,84 @@
 @import "tailwindcss";
 
+@theme {
+  --color-surface: #fbf9f6;
+  --color-surface-dim: #dbdad7;
+  --color-surface-bright: #fbf9f6;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f3f0;
+  --color-surface-container: #efeeeb;
+  --color-surface-container-high: #eae8e5;
+  --color-surface-container-highest: #e4e2df;
+  --color-on-surface: #1b1c1a;
+  --color-on-surface-variant: #4b463f;
+  --color-inverse-surface: #30312f;
+  --color-inverse-on-surface: #f2f0ed;
+  --color-outline: #7d766e;
+  --color-outline-variant: #cec5bc;
+  --color-surface-tint: #635d57;
+  --color-primary: #15110d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2a2621;
+  --color-on-primary-container: #938d86;
+  --color-inverse-primary: #cdc5bd;
+  --color-secondary: #755a2a;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #fdd79c;
+  --color-on-secondary-container: #785c2c;
+  --color-tertiary: #181104;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #2e2515;
+  --color-on-tertiary-container: #998c75;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-primary-fixed: #eae1d9;
+  --color-primary-fixed-dim: #cdc5bd;
+  --color-on-primary-fixed: #1f1b16;
+  --color-on-primary-fixed-variant: #4b4640;
+  --color-secondary-fixed: #ffdeaa;
+  --color-secondary-fixed-dim: #e5c187;
+  --color-on-secondary-fixed: #271900;
+  --color-on-secondary-fixed-variant: #5b4314;
+  --color-tertiary-fixed: #f1e0c7;
+  --color-tertiary-fixed-dim: #d4c4ac;
+  --color-on-tertiary-fixed: #221a0b;
+  --color-on-tertiary-fixed-variant: #504533;
+  --color-background: #fbf9f6;
+  --color-on-background: #1b1c1a;
+  --color-surface-variant: #e4e2df;
+  --font-serif: "Noto Serif", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 @layer base {
-  :root {
-    --font-serif: 'Noto Serif', Georgia, serif;
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
-
-  body {
+  html, body {
+    margin: 0;
+    padding: 0;
     font-family: var(--font-sans);
-    background-color: #FAF8F5;
-    color: #1B1C1A;
+    background-color: #fbf9f6;
+    color: #1b1c1a;
+    -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, .font-serif {
+  h1, h2, h3, h4, .font-serif {
     font-family: var(--font-serif);
   }
 }
 
-/* Custom scrollbar for refined editorial feel */
+/* Refined custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4EFEB;
+  background: #f5f3f0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4C9BD;
-  border-radius: 3px;
+  background: #cec5bc;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B3A495;
+  background: #7d766e;
 }
