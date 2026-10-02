@@ -10,13 +10,13 @@ export const ErrorState: React.FC<{
 }> = ({ title = 'Ocurrió un error', message, onRetry, className = 'py-12' }) => {
   return (
     <div
-      className={`max-w-md mx-auto p-6 bg-[#ffdad6]/40 border border-[#ba1a1a]/30 rounded-lg text-center ${className}`}
+      className={`max-w-md mx-auto p-6 bg-[#ffdad6]/30 border border-[#9b2c2c]/30 rounded-[8px] text-center ${className}`}
     >
-      <div className="w-10 h-10 rounded-full bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center mx-auto mb-3">
-        <AlertCircle className="w-5 h-5" />
+      <div className="w-9 h-9 rounded-full bg-[#ffdad6] text-[#9b2c2c] flex items-center justify-center mx-auto mb-3">
+        <AlertCircle className="w-4 h-4" />
       </div>
-      <h3 className="font-serif font-bold text-base text-[#93000a] mb-1">{title}</h3>
-      <p className="text-xs text-[#93000a]/80 mb-4">{message}</p>
+      <h3 className="font-serif text-base text-[#9b2c2c] mb-1">{title}</h3>
+      <p className="text-xs text-[#4b463f] mb-4">{message}</p>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>
           Reintentar

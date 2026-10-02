@@ -7,7 +7,6 @@ import {
   Calendar,
   CheckCircle2,
   AlertCircle,
-  Info,
   Clock,
   Edit2,
   Save,
@@ -40,17 +39,14 @@ export const AvailabilityManagementView: React.FC = () => {
 
   const hoy = hoyString();
 
-  // Add new range states
   const [nuevoInicio, setNuevoInicio] = useState(sumarDias(hoy, 1));
   const [nuevoFin, setNuevoFin] = useState(sumarDias(hoy, 15));
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Edit range state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editInicio, setEditInicio] = useState('');
   const [editFin, setEditFin] = useState('');
 
-  // Delete dialog state
   const [rangoToDelete, setRangoToDelete] = useState<Disponibilidad | null>(null);
 
   if (!currentUser) {
@@ -61,7 +57,7 @@ export const AvailabilityManagementView: React.FC = () => {
   if (!publicacion) {
     return (
       <div className="max-w-md mx-auto py-16 text-center">
-        <p className="text-sm text-[#4b463f]">Publicación no encontrada.</p>
+        <p className="text-xs sm:text-sm text-[#4b463f]">Publicación no encontrada.</p>
         <Link to="/mis-publicaciones">
           <Button variant="outline" size="sm" className="mt-4">
             Volver a mis publicaciones
@@ -91,7 +87,6 @@ export const AvailabilityManagementView: React.FC = () => {
     }
 
     agregarDisponibilidad(publicacion.idPublicacion, nuevoInicio, nuevoFin);
-    // Reset to next default range
     setNuevoInicio(sumarDias(nuevoFin, 2));
     setNuevoFin(sumarDias(nuevoFin, 16));
   };
@@ -122,7 +117,7 @@ export const AvailabilityManagementView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
+    <div className="w-full max-w-3xl mx-auto px-6 py-10 space-y-8">
       {/* Header */}
       <div>
         <Link
@@ -134,30 +129,30 @@ export const AvailabilityManagementView: React.FC = () => {
         </Link>
 
         {recienCreada && (
-          <div className="mb-4 p-4 bg-emerald-50 border border-emerald-300 rounded-lg flex items-center gap-3 text-xs text-emerald-800">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <div className="mb-4 p-4 bg-[#f4efeb] border border-[#e8e2d8] rounded-[8px] flex items-center gap-3 text-xs text-[#15110d]">
+            <CheckCircle2 className="w-5 h-5 text-[#755a2a] shrink-0" />
             <div>
               <p className="font-bold">¡Publicación creada exitosamente!</p>
-              <p>
+              <p className="text-[#4b463f]">
                 Tu publicación ya está activa. Ahora agrega los rangos de fechas en los que estará disponible para ser alquilada.
               </p>
             </div>
           </div>
         )}
 
-        <h1 className="font-serif text-3xl font-bold text-[#15110d]">
+        <h1 className="font-serif text-3xl font-normal text-[#15110d]">
           Disponibilidad: {v?.marca} {v?.modelo}
         </h1>
-        <p className="text-sm text-[#4b463f] mt-1">
+        <p className="text-xs sm:text-sm text-[#4b463f] mt-1">
           Define los períodos habilitados en los que este auto podrá recibir reservas. Las reservas deben caber íntegramente dentro de un rango existente.
         </p>
       </div>
 
       {/* Add New Range Form */}
-      <div className="bg-white border border-[#cec5bc] rounded-lg p-5 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-[#efeeeb]">
+      <div className="bg-white border border-[#e8e2d8] rounded-[8px] p-5 shadow-[0_1px_2px_rgba(21,17,13,0.06)] space-y-4">
+        <div className="flex items-center gap-2 pb-2 border-b border-[#f4efeb]">
           <Calendar className="w-4 h-4 text-[#755a2a]" />
-          <h3 className="font-serif font-bold text-sm text-[#1b1c1a] uppercase tracking-wider">
+          <h3 className="font-serif text-sm text-[#15110d] uppercase tracking-wider">
             Agregar nuevo rango habilitado
           </h3>
         </div>
@@ -186,7 +181,7 @@ export const AvailabilityManagementView: React.FC = () => {
           </div>
 
           {formError && (
-            <div className="flex items-center gap-2 text-xs text-[#ba1a1a] bg-[#ffdad6]/40 p-2.5 rounded border border-[#ba1a1a]/30">
+            <div className="flex items-center gap-2 text-xs text-[#9b2c2c] bg-[#ffdad6]/30 p-2.5 rounded-[4px] border border-[#9b2c2c]/30">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{formError}</span>
             </div>
@@ -196,7 +191,7 @@ export const AvailabilityManagementView: React.FC = () => {
             <span className="text-[11px] text-[#7d766e]">
               * Nota: El backend admite rangos superpuestos y los almacena como registros independientes.
             </span>
-            <Button variant="primary" size="sm" type="submit" icon={<Plus className="w-3.5 h-3.5" />}>
+            <Button variant="primary" size="sm" type="submit" className="bg-[#15110d]" icon={<Plus className="w-3.5 h-3.5" />}>
               Agregar rango
             </Button>
           </div>
@@ -206,7 +201,7 @@ export const AvailabilityManagementView: React.FC = () => {
       {/* Ranges List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-serif font-bold text-base text-[#1b1c1a]">
+          <h3 className="font-serif text-base text-[#15110d]">
             Rangos configurados ({rangos.length})
           </h3>
           <span className="text-xs text-[#7d766e]">
@@ -215,7 +210,7 @@ export const AvailabilityManagementView: React.FC = () => {
         </div>
 
         {rangos.length === 0 ? (
-          <div className="bg-[#f5f3f0] border border-[#cec5bc] rounded-lg p-8 text-center text-sm text-[#7d766e]">
+          <div className="bg-white border border-[#e8e2d8] rounded-[8px] p-8 text-center text-xs text-[#7d766e]">
             Esta publicación aún no tiene períodos de disponibilidad configurados. Agrega al menos uno para permitir reservas de conductores.
           </div>
         ) : (
@@ -226,7 +221,7 @@ export const AvailabilityManagementView: React.FC = () => {
               return (
                 <div
                   key={rango.idDisponibilidad}
-                  className="bg-white border border-[#e4e2df] hover:border-[#cec5bc] rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors"
+                  className="bg-white border border-[#e8e2d8] rounded-[8px] p-4 shadow-[0_1px_2px_rgba(21,17,13,0.06)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors"
                 >
                   {isEditing ? (
                     <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
@@ -267,11 +262,11 @@ export const AvailabilityManagementView: React.FC = () => {
                   ) : (
                     <>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#efeeeb] text-[#755a2a] flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-[4px] bg-[#f4efeb] text-[#755a2a] flex items-center justify-center shrink-0">
                           <Calendar className="w-4 h-4" />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-[#1b1c1a]">
+                          <p className="text-sm font-semibold text-[#15110d]">
                             Del {formatearFecha(rango.fechaInicio)} al {formatearFecha(rango.fechaFin)}
                           </p>
                           <p className="text-xs text-[#7d766e] flex items-center gap-1 mt-0.5">
@@ -285,7 +280,7 @@ export const AvailabilityManagementView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleStartEdit(rango)}
-                          className="p-1.5 rounded text-[#4b463f] hover:bg-[#efeeeb] hover:text-[#1b1c1a] transition-colors cursor-pointer text-xs flex items-center gap-1"
+                          className="p-1.5 rounded text-[#4b463f] hover:bg-[#f4efeb] hover:text-[#15110d] transition-colors cursor-pointer text-xs flex items-center gap-1"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                           <span className="hidden sm:inline">Editar</span>
@@ -293,7 +288,7 @@ export const AvailabilityManagementView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setRangoToDelete(rango)}
-                          className="p-1.5 rounded text-[#ba1a1a] hover:bg-[#ffdad6]/40 transition-colors cursor-pointer text-xs flex items-center gap-1"
+                          className="p-1.5 rounded text-[#9b2c2c] hover:bg-[#ffdad6]/30 transition-colors cursor-pointer text-xs flex items-center gap-1"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           <span className="hidden sm:inline">Eliminar</span>
@@ -309,9 +304,9 @@ export const AvailabilityManagementView: React.FC = () => {
       </div>
 
       {/* Done button */}
-      <div className="flex justify-end pt-4 border-t border-[#e4e2df]">
+      <div className="flex justify-end pt-4 border-t border-[#e8e2d8]">
         <Link to="/mis-publicaciones">
-          <Button variant="primary" size="md">
+          <Button variant="primary" size="md" className="bg-[#15110d]">
             Finalizar y volver a Mis Publicaciones
           </Button>
         </Link>

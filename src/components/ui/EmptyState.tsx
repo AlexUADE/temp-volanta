@@ -12,12 +12,12 @@ export const EmptyState: React.FC<{
   return (
     <div className={`flex flex-col items-center justify-center text-center p-8 max-w-md mx-auto ${className}`}>
       {icon && (
-        <div className="w-12 h-12 rounded-full bg-[#efeeeb] text-[#755a2a] flex items-center justify-center mb-4">
+        <div className="w-11 h-11 rounded-[4px] bg-[#f4efeb] text-[#755a2a] flex items-center justify-center mb-4">
           {icon}
         </div>
       )}
-      <h3 className="font-serif font-bold text-lg text-[#1b1c1a] mb-2">{title}</h3>
-      <p className="text-sm text-[#4b463f] leading-relaxed mb-6">{description}</p>
+      <h3 className="font-serif text-lg text-[#1b1c1a] mb-2">{title}</h3>
+      <p className="text-xs text-[#7d766e] leading-relaxed mb-6">{description}</p>
       {actionText && onAction && (
         <Button variant="primary" size="md" onClick={onAction}>
           {actionText}

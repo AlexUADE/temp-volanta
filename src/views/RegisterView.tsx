@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, UserPlus, AlertCircle } from 'lucide-react';
+import { ArrowLeft, UserPlus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/Button';
 import { FormField, inputClass } from '../components/ui/FormField';
@@ -56,7 +56,7 @@ export const RegisterView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-6 py-12 space-y-8">
+    <div className="w-full max-w-xl mx-auto px-6 py-12 space-y-8">
       <div>
         <Link
           to="/"
@@ -66,13 +66,13 @@ export const RegisterView: React.FC = () => {
           <span>Volver al inicio</span>
         </Link>
 
-        <h1 className="font-serif text-3xl font-bold text-[#15110d]">Crear Cuenta en Volanta</h1>
-        <p className="text-sm text-[#4b463f] mt-1">
+        <h1 className="font-serif text-3xl font-normal text-[#15110d]">Crear Cuenta en Volanta</h1>
+        <p className="text-xs sm:text-sm text-[#4b463f] mt-1">
           Una única cuenta te permite tanto alquilar vehículos como publicar los tuyos.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white border border-[#cec5bc] rounded-lg p-6 shadow-xs space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white border border-[#e8e2d8] rounded-[8px] p-6 shadow-[0_1px_2px_rgba(21,17,13,0.06)] space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label="Nombre" required error={errors.nombre}>
             <input
@@ -152,13 +152,13 @@ export const RegisterView: React.FC = () => {
           variant="primary"
           size="md"
           type="submit"
-          className="w-full"
+          className="w-full bg-[#15110d]"
           icon={<UserPlus className="w-4 h-4" />}
         >
           Crear cuenta y comenzar
         </Button>
 
-        <div className="text-center pt-2 border-t border-[#efeeeb]">
+        <div className="text-center pt-2 border-t border-[#f4efeb]">
           <span className="text-xs text-[#7d766e]">¿Ya tienes una cuenta registrada? </span>
           <Link to="/login" className="text-xs text-[#755a2a] font-semibold hover:underline">
             Inicia sesión

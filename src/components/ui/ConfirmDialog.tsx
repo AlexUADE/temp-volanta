@@ -28,35 +28,35 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-xs animate-in fade-in duration-150">
       <div
-        className="bg-white border border-[#cec5bc] rounded-lg shadow-xl max-w-md w-full p-6 text-[#1b1c1a]"
+        className="bg-white border border-[#e8e2d8] rounded-[8px] shadow-[0_8px_24px_rgba(21,17,13,0.12)] max-w-md w-full p-6 text-[#1b1c1a]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                isDestructive ? 'bg-[#ffdad6] text-[#ba1a1a]' : 'bg-[#fdd79c]/50 text-[#755a2a]'
+              className={`w-9 h-9 rounded-[4px] flex items-center justify-center shrink-0 ${
+                isDestructive ? 'bg-[#ffdad6] text-[#9b2c2c]' : 'bg-[#f4efeb] text-[#755a2a]'
               }`}
             >
-              <AlertTriangle className="w-5 h-5" />
+              <AlertTriangle className="w-4 h-4" />
             </div>
-            <h3 className="font-serif font-bold text-lg text-[#1b1c1a]">{title}</h3>
+            <h3 className="font-serif text-lg text-[#1b1c1a]">{title}</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-[#7d766e] hover:text-[#1b1c1a] p-1 rounded hover:bg-[#f5f3f0] transition-colors"
+            className="text-[#7d766e] hover:text-[#1b1c1a] p-1 rounded hover:bg-[#f4efeb] transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <p className="text-sm text-[#4b463f] leading-relaxed mb-6 whitespace-pre-line">
+        <p className="text-xs text-[#4b463f] leading-relaxed mb-6 whitespace-pre-line">
           {message}
         </p>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-2.5">
           <Button variant="outline" size="sm" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>

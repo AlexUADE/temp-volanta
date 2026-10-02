@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Car } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Button } from '../components/ui/Button';
 import { FormField, inputClass, selectClass } from '../components/ui/FormField';
@@ -87,7 +87,7 @@ export const VehicleFormView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+    <div className="w-full max-w-2xl mx-auto px-6 py-10 space-y-8">
       {/* Header */}
       <div>
         <Link
@@ -98,10 +98,10 @@ export const VehicleFormView: React.FC = () => {
           <span>Volver a mis vehículos</span>
         </Link>
 
-        <h1 className="font-serif text-3xl font-bold text-[#15110d]">
+        <h1 className="font-serif text-3xl font-normal text-[#15110d]">
           {isEdit ? 'Editar Vehículo' : 'Registrar Nuevo Vehículo'}
         </h1>
-        <p className="text-sm text-[#4b463f] mt-1">
+        <p className="text-xs sm:text-sm text-[#4b463f] mt-1">
           {isEdit
             ? 'Actualiza las características técnicas de tu vehículo registrado.'
             : 'Completa los datos identificatorios de tu vehículo. Luego podrás agregar fotografías.'}
@@ -109,7 +109,7 @@ export const VehicleFormView: React.FC = () => {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-white border border-[#cec5bc] rounded-lg p-6 shadow-xs space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white border border-[#e8e2d8] rounded-[8px] p-6 shadow-[0_1px_2px_rgba(21,17,13,0.06)] space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Patente */}
           <FormField label="Patente / Dominio" required error={errors.patente}>
@@ -202,13 +202,13 @@ export const VehicleFormView: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#efeeeb]">
+        <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#f4efeb]">
           <Link to="/mis-vehiculos">
             <Button variant="outline" size="md">
               Cancelar
             </Button>
           </Link>
-          <Button variant="primary" size="md" type="submit" icon={<Save className="w-4 h-4" />}>
+          <Button variant="primary" size="md" type="submit" className="bg-[#15110d]" icon={<Save className="w-3.5 h-3.5" />}>
             {isEdit ? 'Guardar cambios' : 'Continuar a gestionar fotos'}
           </Button>
         </div>

@@ -25,7 +25,6 @@ export const ListingFormView: React.FC = () => {
   const existingPub = id ? getPublicacionCompleta(id) : undefined;
   const misVehiculos = getVehiculosPropios();
 
-  // Form states
   const [idVehiculo, setIdVehiculo] = useState(
     existingPub?.idVehiculo || preselectedVehiculoId || misVehiculos[0]?.idVehiculo || ''
   );
@@ -61,7 +60,6 @@ export const ListingFormView: React.FC = () => {
     return null;
   }
 
-  // Check if selected vehicle already has an active or paused publication
   const vehiculoActualPubVigente = !isEdit && idVehiculo
     ? getPublicacionVigenteDeVehiculo(idVehiculo)
     : undefined;
@@ -112,16 +110,14 @@ export const ListingFormView: React.FC = () => {
         descripcion: descripcion.trim(),
         horaRetiroDevolucion,
       });
-      // The backend creates publication in ACTIVA state, then redirects to configure availability ranges
       navigate(`/publicaciones/${nueva.idPublicacion}/disponibilidad?creada=true`);
     }
   };
 
-  const selectedVehiculo = misVehiculos.find((v) => v.idVehiculo === idVehiculo);
   const selectedUbicacion = ubicaciones.find((u) => u.idUbicacion === idUbicacion);
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+    <div className="w-full max-w-2xl mx-auto px-6 py-10 space-y-8">
       {/* Header */}
       <div>
         <Link
@@ -132,10 +128,10 @@ export const ListingFormView: React.FC = () => {
           <span>Volver a mis publicaciones</span>
         </Link>
 
-        <h1 className="font-serif text-3xl font-bold text-[#15110d]">
+        <h1 className="font-serif text-3xl font-normal text-[#15110d]">
           {isEdit ? 'Editar Publicación' : 'Crear Nueva Publicación'}
         </h1>
-        <p className="text-sm text-[#4b463f] mt-1">
+        <p className="text-xs sm:text-sm text-[#4b463f] mt-1">
           {isEdit
             ? 'Actualiza las tarifas, ubicación y condiciones de alquiler.'
             : 'Publica tu vehículo en alquiler. Luego de guardarlo podrás definir los períodos de disponibilidad.'}
@@ -143,8 +139,8 @@ export const ListingFormView: React.FC = () => {
       </div>
 
       {misVehiculos.length === 0 ? (
-        <div className="bg-white border border-[#cec5bc] rounded-lg p-8 text-center space-y-4">
-          <p className="text-sm text-[#4b463f]">
+        <div className="bg-white border border-[#e8e2d8] rounded-[8px] p-8 text-center space-y-4">
+          <p className="text-xs sm:text-sm text-[#4b463f]">
             No tienes vehículos registrados actualmente para publicar.
           </p>
           <Link to="/mis-vehiculos/nuevo">
@@ -154,14 +150,14 @@ export const ListingFormView: React.FC = () => {
           </Link>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="bg-white border border-[#cec5bc] rounded-lg p-6 shadow-xs space-y-6">
+        <form onSubmit={handleSubmit} className="bg-white border border-[#e8e2d8] rounded-[8px] p-6 shadow-[0_1px_2px_rgba(21,17,13,0.06)] space-y-6">
           {/* Vehículo selection */}
           {isEdit ? (
-            <div className="p-4 bg-[#f5f3f0] border border-[#cec5bc] rounded-md space-y-1">
-              <span className="text-xs text-[#7d766e] font-semibold uppercase tracking-wider block">
+            <div className="p-4 bg-[#f4efeb] border border-[#e8e2d8] rounded-[4px] space-y-1">
+              <span className="text-[10px] text-[#7d766e] font-bold uppercase tracking-[0.1em] block">
                 Vehículo asignado (Solo lectura)
               </span>
-              <p className="text-base font-serif font-bold text-[#1b1c1a]">
+              <p className="text-base font-serif text-[#1b1c1a]">
                 {existingPub?.vehiculo?.marca} {existingPub?.vehiculo?.modelo} ({existingPub?.vehiculo?.anio})
               </p>
               <p className="text-xs text-[#7d766e]">
@@ -187,8 +183,8 @@ export const ListingFormView: React.FC = () => {
 
               {/* Notice if vehicle has current listing */}
               {vehiculoActualPubVigente && (
-                <div className="flex items-start gap-2 p-3 bg-[#fdd79c]/30 border border-[#755a2a]/30 rounded-md text-xs text-[#785c2c]">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 p-3 bg-[#f4efeb] border border-[#e8e2d8] rounded-[4px] text-xs text-[#15110d]">
+                  <AlertCircle className="w-4 h-4 text-[#755a2a] shrink-0 mt-0.5" />
                   <div>
                     <span className="font-semibold block">
                       Este vehículo ya tiene una publicación vigente ({vehiculoActualPubVigente.estado}).
@@ -198,7 +194,7 @@ export const ListingFormView: React.FC = () => {
                     </span>
                     <Link
                       to={`/publicaciones/${vehiculoActualPubVigente.idPublicacion}/editar`}
-                      className="font-bold underline ml-1"
+                      className="font-bold text-[#755a2a] underline ml-1"
                     >
                       Gestionar publicación vigente
                     </Link>
@@ -225,10 +221,9 @@ export const ListingFormView: React.FC = () => {
             </FormField>
 
             {selectedUbicacion && (
-              <div className="text-[11px] text-[#7d766e] bg-[#f5f3f0] p-2.5 rounded border border-[#e4e2df]">
+              <div className="text-[11px] text-[#7d766e] bg-[#f4efeb] p-2.5 rounded-[4px] border border-[#e8e2d8]">
                 <strong>Zona:</strong> {selectedUbicacion.zona} · <strong>CP:</strong>{' '}
-                {selectedUbicacion.codigoPostal} · <strong>Coords:</strong>{' '}
-                {selectedUbicacion.latitud}, {selectedUbicacion.longitud}
+                {selectedUbicacion.codigoPostal}
               </div>
             )}
           </div>
@@ -272,7 +267,7 @@ export const ListingFormView: React.FC = () => {
           <FormField
             label="Horario fijo de entrega y devolución"
             required
-            helperText="Horario único establecido por el propietario para entrega y recepción"
+            helperText="Horario único establecido para retiro y recepción del vehículo"
             error={errors.horaRetiroDevolucion}
           >
             <input
@@ -299,7 +294,7 @@ export const ListingFormView: React.FC = () => {
           </FormField>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#efeeeb]">
+          <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#f4efeb]">
             <Link to="/mis-publicaciones">
               <Button variant="outline" size="md">
                 Cancelar
@@ -309,7 +304,8 @@ export const ListingFormView: React.FC = () => {
               variant="primary"
               size="md"
               type="submit"
-              icon={isEdit ? <Save className="w-4 h-4" /> : <Calendar className="w-4 h-4" />}
+              className="bg-[#15110d]"
+              icon={isEdit ? <Save className="w-3.5 h-3.5" /> : <Calendar className="w-3.5 h-3.5" />}
             >
               {isEdit ? 'Guardar cambios' : 'Continuar a definir disponibilidad'}
             </Button>

@@ -45,7 +45,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto px-6 py-12 space-y-8">
+    <div className="w-full max-w-md mx-auto px-6 py-12 space-y-8">
       <div>
         <Link
           to="/"
@@ -55,43 +55,43 @@ export const LoginView: React.FC = () => {
           <span>Volver al inicio</span>
         </Link>
 
-        <h1 className="font-serif text-3xl font-bold text-[#15110d]">Iniciar Sesión</h1>
-        <p className="text-sm text-[#4b463f] mt-1">
+        <h1 className="font-serif text-3xl font-normal text-[#15110d]">Iniciar Sesión</h1>
+        <p className="text-xs sm:text-sm text-[#4b463f] mt-1">
           Ingresa a tu cuenta de Volanta para gestionar alquileres y publicaciones.
         </p>
       </div>
 
       {/* Quick Demo Access Card */}
-      <div className="bg-[#f5f3f0] border border-[#cec5bc] rounded-lg p-4 space-y-3">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-[#755a2a] block">
+      <div className="bg-[#f4efeb] border border-[#e8e2d8] rounded-[8px] p-4 space-y-3">
+        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#755a2a] block">
           Acceso rápido para evaluación de prototipo:
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-xs justify-start"
+            className="w-full text-[11px] justify-start bg-white"
             icon={<User className="w-3.5 h-3.5 text-[#755a2a]" />}
             onClick={handleDemoUser}
           >
-            Como Usuario (Mariano)
+            Como Usuario
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-xs justify-start"
+            className="w-full text-[11px] justify-start bg-white"
             icon={<Shield className="w-3.5 h-3.5 text-[#755a2a]" />}
             onClick={handleDemoAdmin}
           >
-            Como Administrador
+            Como Admin
           </Button>
         </div>
       </div>
 
       {/* Main Login Form */}
-      <form onSubmit={handleSubmit} className="bg-white border border-[#cec5bc] rounded-lg p-6 shadow-xs space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white border border-[#e8e2d8] rounded-[8px] p-6 shadow-[0_1px_2px_rgba(21,17,13,0.06)] space-y-5">
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-[#ffdad6]/40 border border-[#ba1a1a]/30 rounded-md text-xs text-[#93000a]">
+          <div className="flex items-center gap-2 p-3 bg-[#ffdad6]/30 border border-[#9b2c2c]/30 rounded-[4px] text-xs text-[#9b2c2c]">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -117,11 +117,11 @@ export const LoginView: React.FC = () => {
           />
         </FormField>
 
-        <Button variant="primary" size="md" type="submit" className="w-full" icon={<LogIn className="w-4 h-4" />}>
+        <Button variant="primary" size="md" type="submit" className="w-full bg-[#15110d]" icon={<LogIn className="w-4 h-4" />}>
           Ingresar
         </Button>
 
-        <div className="text-center pt-2 border-t border-[#efeeeb]">
+        <div className="text-center pt-2 border-t border-[#f4efeb]">
           <span className="text-xs text-[#7d766e]">¿No tienes una cuenta aún? </span>
           <Link to="/registro" className="text-xs text-[#755a2a] font-semibold hover:underline">
             Regístrate aquí

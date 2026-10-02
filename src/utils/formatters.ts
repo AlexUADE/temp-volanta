@@ -5,17 +5,17 @@ export function getEstadoPublicacionBadge(estado: EstadoPublicacion) {
     case 'ACTIVA':
       return {
         label: 'Activa',
-        classes: 'bg-[#efeeeb] text-[#755a2a] border border-[#755a2a]/20',
+        classes: 'bg-[#f4efeb] text-[#755a2a] border border-[#e8e2d8]',
       };
     case 'PAUSADA':
       return {
         label: 'Pausada',
-        classes: 'bg-[#f5f3f0] text-[#7d766e] border border-[#cec5bc]',
+        classes: 'bg-[#f4efeb] text-[#7d766e] border border-[#e8e2d8]',
       };
     case 'DESACTIVADA':
       return {
         label: 'Desactivada',
-        classes: 'bg-[#e4e2df] text-[#4b463f] border border-[#cec5bc]',
+        classes: 'bg-[#eae8e5] text-[#4b463f] border border-[#e8e2d8]',
       };
   }
 }
@@ -24,48 +24,48 @@ export function getEstadoReservaBadge(estado: EstadoReserva) {
   switch (estado) {
     case 'PENDIENTE':
       return {
-        label: 'Pendiente de pago',
-        classes: 'bg-[#fdd79c]/40 text-[#785c2c] border border-[#755a2a]/30',
+        label: 'Reserva pendiente',
+        classes: 'bg-[#f4efeb] text-[#755a2a] border border-[#e8e2d8]',
       };
     case 'CONFIRMADA':
       return {
-        label: 'Confirmada',
-        classes: 'bg-emerald-50 text-emerald-800 border border-emerald-300',
+        label: 'Reserva confirmada',
+        classes: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
       };
     case 'RECHAZADA':
       return {
-        label: 'Rechazada',
-        classes: 'bg-red-50 text-red-800 border border-red-300',
+        label: 'Reserva rechazada',
+        classes: 'bg-red-50 text-red-800 border border-red-200',
       };
     case 'CANCELADA':
       return {
-        label: 'Cancelada',
-        classes: 'bg-zinc-100 text-zinc-600 border border-zinc-300',
+        label: 'Reserva cancelada',
+        classes: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
       };
     case 'FINALIZADA':
       return {
-        label: 'Finalizada',
-        classes: 'bg-blue-50 text-blue-800 border border-blue-300',
+        label: 'Reserva finalizada',
+        classes: 'bg-blue-50 text-blue-800 border border-blue-200',
       };
   }
 }
 
-export function getEstadoPagoBadge(estado: EstadoPago) {
+export function getEstadoPagoBadge(estado: EstadoPago, metodo?: MetodoPago) {
   switch (estado) {
     case 'PENDIENTE':
       return {
-        label: 'Pago Pendiente',
-        classes: 'bg-[#fdd79c]/40 text-[#785c2c] border border-[#755a2a]/30',
+        label: metodo === 'EFECTIVO' ? 'Pendiente en administración' : 'Pendiente de pago',
+        classes: 'bg-[#f4efeb] text-[#7d766e] border border-[#e8e2d8]',
       };
     case 'APROBADO':
       return {
-        label: 'Pago Aprobado',
-        classes: 'bg-emerald-50 text-emerald-800 border border-emerald-300',
+        label: 'Pago acreditado',
+        classes: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
       };
     case 'RECHAZADO':
       return {
-        label: 'Pago Rechazado',
-        classes: 'bg-red-50 text-red-800 border border-red-300',
+        label: 'Pago no acreditado',
+        classes: 'bg-red-50 text-red-800 border border-red-200',
       };
   }
 }

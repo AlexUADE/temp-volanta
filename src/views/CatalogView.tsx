@@ -1,22 +1,41 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, MapPin, Users, Tag, Filter, SlidersHorizontal, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  MapPin,
+  Calendar,
+  ChevronDown,
+  Search,
+  RotateCcw,
+  Car,
+} from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { formatearMoneda } from '../utils/pricing';
-import { EmptyState } from '../components/ui/EmptyState';
-import { Button } from '../components/ui/Button';
+import { Publicacion } from '../types';
 
 export const CatalogView: React.FC = () => {
   const { getPublicacionesActivas } = useApp();
   const publicaciones = getPublicacionesActivas();
+  const navigate = useNavigate();
 
-  // Simple backend-compatible filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTipo, setSelectedTipo] = useState('');
-  const [selectedUbicacion, setSelectedUbicacion] = useState('');
-  const [maxPrecio, setMaxPrecio] = useState<number | ''>('');
+  // SearchBar states
+  const [selectedZona, setSelectedZona] = useState<string>('all');
+  const [fechaRetiro, setFechaRetiro] = useState<string>('');
+  const [fechaDevolucion, setFechaDevolucion] = useState<string>('');
 
-  // Extract unique types and locations
+  // Category & Sorting states (outside search bar)
+  const [selectedTipo, setSelectedTipo] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('recommended');
+
+  // Extract unique locations and vehicle types
+  const zonas = useMemo(() => {
+    const set = new Set<string>();
+    publicaciones.forEach((p) => {
+      if (p.ubicacion?.zona) set.add(p.ubicacion.zona);
+      else if (p.ubicacion?.ciudad) set.add(p.ubicacion.ciudad);
+    });
+    return Array.from(set).sort();
+  }, [publicaciones]);
+
   const vehicleTypes = useMemo(() => {
     const set = new Set<string>();
     publicaciones.forEach((p) => {
@@ -25,248 +44,297 @@ export const CatalogView: React.FC = () => {
     return Array.from(set);
   }, [publicaciones]);
 
-  const locations = useMemo(() => {
-    const set = new Set<string>();
-    publicaciones.forEach((p) => {
-      if (p.ubicacion?.ciudad) set.add(p.ubicacion.ciudad);
-    });
-    return Array.from(set);
-  }, [publicaciones]);
-
-  // Filtered publications
-  const filtered = useMemo(() => {
-    return publicaciones.filter((pub) => {
+  // Filter and sort
+  const filteredAndSorted = useMemo(() => {
+    let result = publicaciones.filter((pub) => {
       const v = pub.vehiculo;
       const u = pub.ubicacion;
 
-      // Text search in brand or model
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase();
-        const brandMatch = v?.marca.toLowerCase().includes(query);
-        const modelMatch = v?.modelo.toLowerCase().includes(query);
-        if (!brandMatch && !modelMatch) return false;
+      // Filter by zona/city
+      if (selectedZona !== 'all') {
+        const matchesZona = u?.zona === selectedZona || u?.ciudad === selectedZona;
+        if (!matchesZona) return false;
       }
 
       // Filter by vehicle type
-      if (selectedTipo && v?.tipoVehiculo !== selectedTipo) {
-        return false;
-      }
-
-      // Filter by location (city)
-      if (selectedUbicacion && u?.ciudad !== selectedUbicacion) {
-        return false;
-      }
-
-      // Filter by max price
-      if (maxPrecio !== '' && pub.precioDia > Number(maxPrecio)) {
+      if (selectedTipo !== 'all' && v?.tipoVehiculo !== selectedTipo) {
         return false;
       }
 
       return true;
     });
-  }, [publicaciones, searchTerm, selectedTipo, selectedUbicacion, maxPrecio]);
 
-  const handleResetFilters = () => {
-    setSearchTerm('');
-    setSelectedTipo('');
-    setSelectedUbicacion('');
-    setMaxPrecio('');
+    // Sorting
+    result.sort((a, b) => {
+      const descA = a.descuentoPorcentaje ? Math.round(a.precioDia * (1 - a.descuentoPorcentaje / 100)) : a.precioDia;
+      const descB = b.descuentoPorcentaje ? Math.round(b.precioDia * (1 - b.descuentoPorcentaje / 100)) : b.precioDia;
+
+      if (sortBy === 'price-asc') return descA - descB;
+      if (sortBy === 'price-desc') return descB - descA;
+      if (sortBy === 'year-desc') return (b.vehiculo?.anio || 0) - (a.vehiculo?.anio || 0);
+      return 0; // recommended
+    });
+
+    return result;
+  }, [publicaciones, selectedZona, selectedTipo, sortBy]);
+
+  const hayFiltros = selectedZona !== 'all' || selectedTipo !== 'all' || sortBy !== 'recommended';
+
+  const resetFiltros = () => {
+    setSelectedZona('all');
+    setSelectedTipo('all');
+    setSortBy('recommended');
+  };
+
+  const handleSearchScroll = (e: React.FormEvent) => {
+    e.preventDefault();
+    document.getElementById('fleet-results')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-6 lg:px-12 py-8 space-y-8">
-      {/* Editorial Header */}
-      <section className="border-b border-[#e4e2df] pb-8 pt-2">
-        <span className="text-xs uppercase tracking-widest text-[#755a2a] font-semibold block mb-2">
-          Movilidad compartida en Argentina
-        </span>
-        <h1 className="font-serif text-3xl sm:text-4xl text-[#15110d] font-bold tracking-tight max-w-2xl mb-3">
-          Alquiler de vehículos directamente entre particulares
+    <div className="w-full max-w-[1440px] mx-auto px-6 lg:px-12 py-10 lg:py-14 space-y-10">
+      {/* Hero Section */}
+      <section className="max-w-[42rem]">
+        <h1 className="font-serif text-4xl sm:text-5xl lg:text-[3.5rem] leading-[1.12] tracking-[-0.02em] text-[#15110d] font-normal mb-5">
+          Movilidad privada <br />
+          <em className="italic text-[#8a6d3b]">sin compromisos.</em>
         </h1>
-        <p className="text-sm sm:text-base text-[#4b463f] max-w-2xl leading-relaxed">
-          Encuentra el auto adecuado para tus viajes o paseos. Alquila de forma simple con gestión de reservas y tarifas transparentes.
+        <p className="text-[15px] sm:text-base leading-[1.7] text-[#4b463f]">
+          Alquiler directo de vehículos entre particulares. Gestiona tus reservas con tarifas transparentes y entrega acordada en tu zona.
         </p>
       </section>
 
-      {/* Backend-compatible simple filters */}
-      <section className="bg-white border border-[#cec5bc] rounded-lg p-5 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 pb-3 border-b border-[#efeeeb] text-xs font-semibold text-[#1b1c1a] uppercase tracking-wider">
-          <SlidersHorizontal className="w-3.5 h-3.5 text-[#755a2a]" />
-          <span>Filtros de búsqueda</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Marca / Modelo Search */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#4b463f]">Marca o modelo</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Ej. Toyota, Taos, Cruze..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-[#cec5bc] rounded-md focus:border-[#755a2a] focus:ring-1 focus:ring-[#755a2a] outline-none"
-              />
-              <Search className="w-3.5 h-3.5 text-[#7d766e] absolute left-3 top-2.5" />
-            </div>
-          </div>
-
-          {/* Tipo de vehículo */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#4b463f]">Tipo de vehículo</label>
+      {/* Integrated Search Bar (16px radius desktop, 12px mobile) */}
+      <form
+        onSubmit={handleSearchScroll}
+        className="flex flex-col lg:flex-row items-stretch lg:items-center bg-white border border-[#e8e2d8] rounded-[12px] lg:rounded-[16px] p-2 lg:p-2.5 shadow-[0_1px_2px_rgba(21,17,13,0.06)]"
+      >
+        {/* Field 1: Location */}
+        <label className="flex-1 block p-3 sm:px-4 sm:py-3 cursor-pointer">
+          <span className="block mb-1 text-[10px] font-bold tracking-[0.1em] uppercase text-[#7d766e]">
+            Ubicación de retiro
+          </span>
+          <span className="relative flex items-center gap-2.5">
+            <MapPin className="w-4 h-4 text-[#755a2a] shrink-0" />
             <select
-              value={selectedTipo}
-              onChange={(e) => setSelectedTipo(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-white border border-[#cec5bc] rounded-md focus:border-[#755a2a] focus:ring-1 focus:ring-[#755a2a] outline-none"
+              value={selectedZona}
+              onChange={(e) => setSelectedZona(e.target.value)}
+              className="w-full p-0 bg-transparent border-0 text-[13px] font-medium text-[#15110d] appearance-none pr-6 outline-none cursor-pointer"
             >
-              <option value="">Todos los tipos</option>
-              {vehicleTypes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              <option value="all">Todas las zonas</option>
+              {zonas.map((z) => (
+                <option key={z} value={z}>
+                  {z}
                 </option>
               ))}
             </select>
-          </div>
+            <ChevronDown className="w-3.5 h-3.5 text-[#7d766e] absolute right-0 pointer-events-none" />
+          </span>
+        </label>
 
-          {/* Ubicación */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#4b463f]">Ciudad / Ubicación</label>
-            <select
-              value={selectedUbicacion}
-              onChange={(e) => setSelectedUbicacion(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-white border border-[#cec5bc] rounded-md focus:border-[#755a2a] focus:ring-1 focus:ring-[#755a2a] outline-none"
-            >
-              <option value="">Todas las ciudades</option>
-              {locations.map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Precio máximo */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#4b463f]">Precio máximo por día</label>
+        {/* Field 2: Pickup date (desktop border left) */}
+        <label className="flex-1 block p-3 sm:px-4 sm:py-3 border-t lg:border-t-0 lg:border-l border-[#e8e2d8] cursor-pointer">
+          <span className="block mb-1 text-[10px] font-bold tracking-[0.1em] uppercase text-[#7d766e]">
+            Fecha de retiro
+          </span>
+          <span className="relative flex items-center gap-2.5">
+            <Calendar className="w-4 h-4 text-[#755a2a] shrink-0" />
             <input
-              type="number"
-              placeholder="Ej. 90000"
-              value={maxPrecio}
-              onChange={(e) => setMaxPrecio(e.target.value ? Number(e.target.value) : '')}
-              className="w-full px-3 py-2 text-xs bg-white border border-[#cec5bc] rounded-md focus:border-[#755a2a] focus:ring-1 focus:ring-[#755a2a] outline-none"
+              type="date"
+              value={fechaRetiro}
+              max={fechaDevolucion || undefined}
+              onChange={(e) => setFechaRetiro(e.target.value)}
+              className="w-full p-0 bg-transparent border-0 text-[13px] font-medium text-[#15110d] outline-none cursor-pointer"
             />
-          </div>
-        </div>
+          </span>
+        </label>
 
-        {(searchTerm || selectedTipo || selectedUbicacion || maxPrecio !== '') && (
-          <div className="flex justify-end pt-2">
+        {/* Field 3: Return date (desktop border left) */}
+        <label className="flex-1 block p-3 sm:px-4 sm:py-3 border-t lg:border-t-0 lg:border-l border-[#e8e2d8] cursor-pointer">
+          <span className="block mb-1 text-[10px] font-bold tracking-[0.1em] uppercase text-[#7d766e]">
+            Fecha de devolución
+          </span>
+          <span className="relative flex items-center gap-2.5">
+            <Calendar className="w-4 h-4 text-[#755a2a] shrink-0" />
+            <input
+              type="date"
+              value={fechaDevolucion}
+              min={fechaRetiro || undefined}
+              onChange={(e) => setFechaDevolucion(e.target.value)}
+              className="w-full p-0 bg-transparent border-0 text-[13px] font-medium text-[#15110d] outline-none cursor-pointer"
+            />
+          </span>
+        </label>
+
+        {/* Submit button (8px radius) */}
+        <button
+          type="submit"
+          className="m-2 lg:m-0 lg:ml-2 px-7 py-3.5 lg:py-4 bg-[#15110d] hover:bg-[#2a2621] text-white rounded-[8px] text-[11px] font-bold tracking-[0.06em] uppercase flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
+        >
+          <Search className="w-4 h-4" />
+          <span>Explorar flota</span>
+        </button>
+      </form>
+
+      {/* Fleet Section */}
+      <section id="fleet-results" className="space-y-6 pt-2">
+        {/* Toolbar: Category filters & Sort select */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          {/* Category filter pills (4px radius) */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar" role="group">
             <button
-              onClick={handleResetFilters}
-              className="text-xs text-[#755a2a] hover:underline cursor-pointer font-medium"
+              type="button"
+              onClick={() => setSelectedTipo('all')}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-[11px] font-bold tracking-[0.06em] uppercase whitespace-nowrap transition-colors cursor-pointer ${
+                selectedTipo === 'all'
+                  ? 'bg-[#15110d] text-white'
+                  : 'bg-[#f4efeb] text-[#4b463f] hover:bg-[#ebe4dc] hover:text-[#15110d]'
+              }`}
             >
-              Limpiar filtros
+              <Car className="w-3.5 h-3.5" />
+              <span>Todos los vehículos</span>
             </button>
+            {vehicleTypes.map((tipo) => (
+              <button
+                key={tipo}
+                type="button"
+                onClick={() => setSelectedTipo(tipo)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-[11px] font-bold tracking-[0.06em] uppercase whitespace-nowrap transition-colors cursor-pointer ${
+                  selectedTipo === tipo
+                    ? 'bg-[#15110d] text-white'
+                    : 'bg-[#f4efeb] text-[#4b463f] hover:bg-[#ebe4dc] hover:text-[#15110d]'
+                }`}
+              >
+                {tipo}
+              </button>
+            ))}
           </div>
-        )}
-      </section>
 
-      {/* Publications Grid */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-medium text-[#7d766e]">
-            Mostrando <span className="font-semibold text-[#1b1c1a]">{filtered.length}</span>{' '}
-            publicaciones disponibles
-          </p>
+          {/* Sort select */}
+          <label className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+            <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-[#7d766e]">
+              Ordenar por:
+            </span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 bg-white border border-[#e8e2d8] rounded-[4px] text-xs text-[#15110d] cursor-pointer outline-none focus:border-[#755a2a]"
+            >
+              <option value="recommended">Recomendados</option>
+              <option value="price-asc">Menor precio</option>
+              <option value="price-desc">Mayor precio</option>
+              <option value="year-desc">Más nuevos</option>
+            </select>
+          </label>
         </div>
 
-        {filtered.length === 0 ? (
-          <EmptyState
-            title="Sin publicaciones para los filtros seleccionados"
-            description="No encontramos vehículos activos que coincidan con tus criterios de búsqueda. Prueba modificando los filtros."
-            actionText="Ver todas las publicaciones"
-            onAction={handleResetFilters}
-          />
+        {/* Summary text */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[#7d766e]">
+          <span>
+            Mostrando <strong className="text-[#15110d]">{filteredAndSorted.length}</strong>{' '}
+            publicaciones activas
+          </span>
+          {hayFiltros && (
+            <button
+              type="button"
+              onClick={resetFiltros}
+              className="inline-flex items-center gap-1.5 text-xs text-[#7d766e] hover:text-[#15110d] transition-colors cursor-pointer font-medium"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Restablecer filtros</span>
+            </button>
+          )}
+        </div>
+
+        {/* Vehicle Grid */}
+        {filteredAndSorted.length === 0 ? (
+          <p className="py-12 text-center text-sm text-[#7d766e]">
+            No se encontraron publicaciones activas para esta selección.
+          </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((pub) => {
+            {filteredAndSorted.map((pub) => {
               const v = pub.vehiculo;
               const u = pub.ubicacion;
-              const portada = v?.imagenes?.[0]?.url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop';
-              const precioConDescuento = pub.descuentoPorcentaje
-                ? Math.round(pub.precioDia * (1 - pub.descuentoPorcentaje / 100))
+              const descuento = pub.descuentoPorcentaje || 0;
+              const tieneDescuento = descuento > 0;
+              const precioDiaFinal = tieneDescuento
+                ? Math.round(pub.precioDia * (1 - descuento / 100))
                 : pub.precioDia;
+              const portada =
+                v?.imagenes?.[0]?.url ||
+                'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop';
+
+              // Carry over dates from search bar to detail if provided
+              const detailUrl =
+                fechaRetiro && fechaDevolucion
+                  ? `/publicacion/${pub.idPublicacion}?inicio=${fechaRetiro}&fin=${fechaDevolucion}`
+                  : `/publicacion/${pub.idPublicacion}`;
 
               return (
-                <div
+                <article
                   key={pub.idPublicacion}
-                  className="group bg-white border border-[#e4e2df] hover:border-[#cec5bc] rounded-lg overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col"
+                  className="flex flex-col overflow-hidden bg-white border border-[#e8e2d8] rounded-[8px] transition-shadow duration-200 hover:shadow-[0_8px_24px_rgba(21,17,13,0.1)] group"
                 >
-                  {/* Photo container */}
-                  <div className="relative aspect-[16/10] bg-[#efeeeb] overflow-hidden">
+                  {/* Media */}
+                  <div className="relative aspect-[16/10] overflow-hidden bg-[#f4efeb]">
                     <img
                       src={portada}
                       alt={`${v?.marca} ${v?.modelo}`}
-                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                     />
-                    {pub.descuentoPorcentaje > 0 && (
-                      <div className="absolute top-3 left-3 bg-[#755a2a] text-white text-[11px] font-semibold px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
-                        <Tag className="w-3 h-3" />
-                        <span>{pub.descuentoPorcentaje}% OFF</span>
-                      </div>
+                    {tieneDescuento ? (
+                      <span className="absolute top-3 left-3 px-2 py-0.5 rounded-[3px] bg-[#755a2a] text-white text-[10px] font-bold tracking-[0.06em]">
+                        -{descuento}%
+                      </span>
+                    ) : (
+                      v?.tipoVehiculo && (
+                        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-[3px] bg-[#15110d]/85 backdrop-blur-xs text-white text-[9px] font-semibold tracking-[0.08em] uppercase">
+                          {v.tipoVehiculo}
+                        </span>
+                      )
                     )}
-                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium px-2 py-0.5 rounded">
-                      {v?.tipoVehiculo}
-                    </div>
                   </div>
 
-                  {/* Vehicle specs and info */}
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                    <div>
-                      <h3 className="font-serif font-bold text-lg text-[#15110d] group-hover:text-[#755a2a] transition-colors">
-                        {v?.marca} {v?.modelo}
-                      </h3>
-                      <p className="text-xs text-[#7d766e] mt-0.5">
-                        Año {v?.anio} · {v?.color}
-                      </p>
+                  {/* Body */}
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="font-serif text-lg tracking-[-0.01em] text-[#15110d] mb-1">
+                      {v?.marca} {v?.modelo} {v?.anio}
+                    </h3>
+                    <p className="flex flex-wrap items-center text-xs text-[#7d766e] mb-5">
+                      {v?.tipoVehiculo && <span>{v.tipoVehiculo}</span>}
+                      {v?.tipoVehiculo && <span className="mx-1.5">·</span>}
+                      <span>{v?.cantidadAsientos} asientos</span>
+                      <span className="mx-1.5">·</span>
+                      <span>
+                        {u?.localidad || u?.ciudad}, {u?.ciudad}
+                      </span>
+                    </p>
 
-                      <div className="mt-3 flex items-center gap-4 text-xs text-[#4b463f]">
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3.5 h-3.5 text-[#7d766e]" />
-                          {v?.cantidadAsientos} asientos
+                    {/* Footer */}
+                    <div className="flex items-center justify-between gap-3 mt-auto pt-4 border-t border-[#f4efeb]">
+                      <div className="flex flex-wrap items-baseline gap-1">
+                        <span className="font-serif text-lg font-semibold text-[#15110d]">
+                          {formatearMoneda(precioDiaFinal)}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-[#7d766e]" />
-                          {u?.localidad || u?.ciudad}, {u?.ciudad}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Price and CTA */}
-                    <div className="pt-3 border-t border-[#efeeeb] flex items-end justify-between">
-                      <div>
-                        <span className="text-[11px] text-[#7d766e] uppercase tracking-wider block">
-                          Tarifa por día
-                        </span>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-[#15110d]">
-                            {formatearMoneda(precioConDescuento)}
+                        <span className="text-xs text-[#7d766e]">/ día</span>
+                        {tieneDescuento && (
+                          <span className="w-full text-xs line-through text-[#7d766e]">
+                            {formatearMoneda(pub.precioDia)}
                           </span>
-                          {pub.descuentoPorcentaje > 0 && (
-                            <span className="text-xs text-[#7d766e] line-through">
-                              {formatearMoneda(pub.precioDia)}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
 
-                      <Link to={`/publicacion/${pub.idPublicacion}`}>
-                        <Button variant="outline" size="sm" icon={<ArrowRight className="w-3.5 h-3.5" />}>
-                          Ver detalle
-                        </Button>
-                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => navigate(detailUrl)}
+                        className="inline-flex items-center justify-center px-4 py-2 border border-[#e8e2d8] rounded-[4px] bg-transparent text-[#15110d] text-xs font-medium hover:bg-[#15110d] hover:text-white hover:border-[#15110d] transition-colors cursor-pointer"
+                      >
+                        Ver detalle
+                      </button>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
